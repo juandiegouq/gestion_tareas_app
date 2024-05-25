@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List App</title>
+</head>
+<body>
+    <h1>To-Do List App</h1>
+    <form id="registerForm">
+        <h2>Register</h2>
+        <input type="text" id="username" placeholder="Username" required><br>
+        <input type="email" id="email" placeholder="Email" required><br>
+        <input type="password" id="password" placeholder="Password" required><br>
+        <button type="submit">Register</button>
+    </form>
+
+    <form id="taskForm">
+        <h2>Create Task</h2>
+        <input type="hidden" id="userId" value="1"><!-- Dummy user ID -->
+        <input type="text" id="title" placeholder="Task Title" required><br>
+        <textarea id="description" placeholder="Task Description"></textarea><br>
+        <button type="submit">Create Task</button>
+    </form>
+
+    <div id="taskList">
+        <h2>Tasks</h2>
+        <ul id="tasks"></ul>
+    </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const response = await fetch('/users/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, email, password }),
+            });
+
+            if (response.ok) {
+                alert('User registered successfully');
+            } else {
+                alert('Error registering user');
+            }
+        });
+
+        document.getElementById('taskForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userId = document.getElementById('userId').value;
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+
+            const response = await fetch('/tasks/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ user_id: userId, title, description }),
+            });
+
+            if (response.ok) {
+                alert('Task created successfully');
+                loadTasks(userId);
+            } else {
+                alert('Error creating task');
+            }
+        });
+
+        async function loadTasks(userId) {
+            const response = await fetch(`/tasks/user/${userId}`);
+            const tasks = await response.json();
+            const taskList = document.getElementById('tasks');
+            taskList.innerHTML = '';
+            tasks.forEach(task => {
+                const li = document.createElement('li');
+                li.textContent = `${task.title}: ${task.description} (Status: ${task.status})`;
+                taskList.appendChild(li);
+            });
+        }
+
+        // Initial load
+        loadTasks(1); // Load tasks for dummy user ID
+    </script>
+</body>
+</html>
