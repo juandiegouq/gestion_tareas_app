@@ -2,10 +2,10 @@ const mysql = require('mysql');
 
 // Configuración de la conexión a la base de datos MySQL
 const db = mysql.createConnection({
-    host: 'YOUR_RDS_ENDPOINT',
-    user: 'YOUR_DB_USERNAME',
-    password: 'YOUR_DB_PASSWORD',
-    database: 'YOUR_DB_NAME'
+    host: 'database-1.cdms6oycumna.us-east-1.rds.amazonaws.com',
+    user: 'admin',
+    password: '',
+    database: 'database-1'
 });
 
 db.connect((err) => {
